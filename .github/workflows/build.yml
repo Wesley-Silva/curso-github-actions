@@ -23,17 +23,22 @@ jobs:
               with:
                 dotnet-version: '8.x'
                 cache: true
-                cache-dependency-path: ./src/**/package.lock.json
 
-            - name: Build
+            - name: Build Net
               run:  dotnet build ./src/Todo.Api.sln
+
+            - name: Test Net
+              run:  dotnet test ./src/Todo.Api.sln --no-build --logger trx --results-directory "TestResults"
+
+            - uses: actions/upload-artifact@v4
+              with:
+                name: dotnet-test-results
+                path: TestResults
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '20'
-                  cache: npm
-                  cache-dependency-path: ./src/web
 
             - name: Install dependencies
               working-directory: ./src/web
