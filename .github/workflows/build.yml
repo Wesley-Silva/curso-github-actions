@@ -1,0 +1,42 @@
+name: Build .NET + React
+
+on:
+  push:
+    branches:
+      - add-workflow-manual
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restaurar dependências .NET
+        run: dotnet restore ./ReactApp/ReactApp.sln
+
+      - name: Build .NET
+        run: dotnet build ./ReactApp/ReactApp.sln --no-restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências do React
+        run: npm install
+        working-directory: ./ReactApp/reactapp.client
+
+      - name: Build do React
+        run: npm run build
+        working-directory: ./ReactApp/reactapp.client
