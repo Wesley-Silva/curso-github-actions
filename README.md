@@ -1,3 +1,3 @@
 # curso-github-actions
 
-Ignorando execução de tarefas
+Ignorando execução de tarefas de teste
