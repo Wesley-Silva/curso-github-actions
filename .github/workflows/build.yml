@@ -22,6 +22,17 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Build and Test
+        run: |
+          dotnet restore ./ReactApp/ReactApp.sln
+          dotnet build --no-restore ./ReactApp/ReactApp.sln
+          dotnet test .ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-tests-results
+          path: TestResults   
+
       - name: Restaurar dependências .NET
         run: dotnet restore ./ReactApp/ReactApp.sln
 
