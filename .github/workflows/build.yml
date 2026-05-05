@@ -28,7 +28,7 @@ jobs:
           dotnet build --no-restore ./ReactApp/ReactApp.sln
           dotnet test .ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v7
         with:
           name: dotnet-tests-results
           path: TestResults   
