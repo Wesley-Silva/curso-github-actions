@@ -26,7 +26,7 @@ jobs:
         run: |
           dotnet restore ./ReactApp/ReactApp.sln
           dotnet build --no-restore ./ReactApp/ReactApp.sln
-          dotnet test .ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
+          dotnet test ./ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
 
       - uses: actions/upload-artifact@v7
         with:
