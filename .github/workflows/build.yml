@@ -3,19 +3,35 @@ name: Build .NET + React
 on:
   push:
     branches:
-      - add-workflow-manual
+      - main
   pull_request:
     branches:
       - main
   workflow_dispatch:
     
 jobs:
+  versionamento:
+    runs-on: ubuntu-latest
+    name: Versionamento
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - uses: codacy/git-version@2.8.0
+        with:
+          release-branch: main
+          prefix: v
+
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - name: Checkout do code
+        uses: actions/checkout@v4      
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
