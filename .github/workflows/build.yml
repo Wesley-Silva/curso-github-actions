@@ -3,24 +3,63 @@ name: Build .NET + React
 on:
   push:
     branches:
-      - add-workflow-manual
+      - main
   pull_request:
     branches:
       - main
   workflow_dispatch:
     
 jobs:
+  versionamento:
+    runs-on: ubuntu-latest
+    name: Versionamento 
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - uses: codacy/git-version@2.8.0
+        id: version
+        with:
+          release-branch: main
+          prefix: v
+
+      - name: Tag do repositorio
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo ::notice:: ${{ steps.version.outputs.version }}
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git tag -a ${{ steps.version.outputs.version }} -m "Release ${{ steps.version.outputs.version }}"
+          git push --tags
+        if: github.ref == 'refs/heads/main'
+          
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - name: Checkout do code
+        uses: actions/checkout@v4      
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Build and Test
+        run: |
+          dotnet restore ./ReactApp/ReactApp.sln
+          dotnet build --no-restore ./ReactApp/ReactApp.sln
+          dotnet test ./ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dotnet-tests-results
+          path: TestResults   
 
       - name: Restaurar dependências .NET
         run: dotnet restore ./ReactApp/ReactApp.sln
