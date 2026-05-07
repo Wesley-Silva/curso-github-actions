@@ -12,7 +12,7 @@ on:
 jobs:
   versionamento:
     runs-on: ubuntu-latest
-    name: Versionamento
+    name: Versionamento 
     
     steps:
       - name: Checkout code
