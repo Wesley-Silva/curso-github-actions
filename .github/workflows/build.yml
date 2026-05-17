@@ -38,8 +38,10 @@ jobs:
           git push --tags
         if: github.ref == 'refs/heads/main'
           
-  build:
+  backend-build-and-test:
+    needs: versionamento
     runs-on: ubuntu-latest
+    name: Backend Build and Test
 
     steps:
       - name: Checkout do code
@@ -50,22 +52,31 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Build and Test
+      - name: Restore 
         run: |
           dotnet restore ./ReactApp/ReactApp.sln
-          dotnet build --no-restore ./ReactApp/ReactApp.sln
-          dotnet test ./ReactApp/ReactApp.sln --no-restore --no-build --logger trx --results-directory "TestResults"
 
-      - uses: actions/upload-artifact@v7
+      - name: Build 
+        run: |          
+          dotnet build --no-restore ./ReactApp/ReactApp.sln
+
+      - name: Test
+        run: |
+          dotnet test --no-build --no-restore ./ReactApp/ReactApp.sln --configuration Release --logger trx --results-directory "TestResults"
+          
+      - uses: actions/upload-artifact@v4
         with:
           name: dotnet-tests-results
-          path: TestResults   
+          path: TestResults
 
-      - name: Restaurar dependências .NET
-        run: dotnet restore ./ReactApp/ReactApp.sln
+  frontend-build-and-test:
+    if: false
+    runs-on: ubuntu-latest
+    name: Build and Test Frontend
 
-      - name: Build .NET
-        run: dotnet build ./ReactApp/ReactApp.sln --no-restore
+    steps:
+      - name: Checkout do code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
