@@ -70,9 +70,12 @@ jobs:
           path: TestResults
 
   frontend-build-and-test:
-    if: false
+    needs: versionamento
     runs-on: ubuntu-latest
     name: Build and Test Frontend
+    defaults:
+      run:
+        working-directory: ./ReactApp/reactapp.client
 
     steps:
       - name: Checkout do code
@@ -85,10 +88,14 @@ jobs:
           cache: npm
           cache-dependency-path: ./ReactApp/reactapp.client/package-lock.json
 
-      - name: Instalar dependências do React
-        run: npm install
-        working-directory: ./ReactApp/reactapp.client
+      - name: Instalar dependências       
+        run: | 
+          npm ci
 
-      - name: Build do React
-        run: npm run build
-        working-directory: ./ReactApp/reactapp.client
+      - name: Testes de lint      
+        run: | 
+          npm run lint
+      
+      - name: Build       
+        run: | 
+          npm run build
